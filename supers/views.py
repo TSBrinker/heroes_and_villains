@@ -1,8 +1,23 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .serializers import SuperSerializer
+from .models import Super
 
 # Create your views here.
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def supers_list(request):
+    if request.method == 'GET': 
+        supers = Super.objects.all()
+        serializer = SuperSerializer(supers, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = SuperSerializer(data=request.data)
+        if serializer.is_valid() == True:
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
 
-    return Response('ok')
+@api_view(['GET', 'PUT', 'DELETE'])
+def supers_update(request):
+    pass
